@@ -436,6 +436,7 @@
       initEventListeners();
     });
 
+    
     function initEventListeners() {
       $("#btnSimpan").click(saveData);
       $('#filterPeriode').change(() => dataTable.draw());
@@ -443,6 +444,9 @@
       $("#jumlah").on("input", function () { $(this).val(formatRibuan(unformatRibuan($(this).val()))); });
       $("#jenis").change(handleJenisChange);
       $('#detailModal').on('shown.bs.modal', loadDetailData);
+      
+      // Tambahkan baris ini untuk filter tanggal Detail Catatan:
+      $("#tglAwal, #tglAkhir").on('change', loadDetailData);
       
       // EVENT BACKUP & RESTORE
       $("#btnBackup").click(backupData);
@@ -601,10 +605,67 @@
       });
     }
 
-    async function loadDetailData() {
-      const data = await db.transaksi.toArray();
-      // Logic for chart/table update can go here
+        async function loadDetailData() {
+      const tglAwalStr = $("#tglAwal").val();
+      const tglAkhirStr = $("#tglAkhir").val();
+
+      // Format tanggal
+      let tglAwal = tglAwalStr ? new Date(tglAwalStr) : null;
+      if (tglAwal) tglAwal.setHours(0,0,0,0);
+      
+      let tglAkhir = tglAkhirStr ? new Date(tglAkhirStr) : null;
+      if (tglAkhir) tglAkhir.setHours(23,59,59,999);
+
+      Swal.fire({ title: 'Memuat data...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+      // Ambil data dari database offline
+      const data = await db.transaksi.reverse().toArray();
+
+      // Filter berdasarkan tanggal jika dipilih
+      const filtered = data.filter(d => {
+        if (!tglAwal && !tglAkhir) return true; // Tampilkan semua jika tidak ada filter
+        
+        const tgl = new Date(d.tanggal);
+        tgl.setHours(12,0,0,0); // Hindari isu zona waktu
+        
+        if (tglAwal && !tglAkhir) return tgl >= tglAwal;
+        if (tglAwal && tglAkhir) return tgl >= tglAwal && tgl <= tglAkhir;
+        if (!tglAwal && tglAkhir) return tgl <= tglAkhir;
+        return true;
+      });
+
+      // Reset tabel jika sudah pernah dibuat sebelumnya
+      if ($.fn.DataTable.isDataTable('#detailTable')) {
+        $('#detailTable').DataTable().clear().destroy();
+      }
+
+      // Buat tabel detail
+      detailTable = $('#detailTable').DataTable({
+        data: filtered.map(r => [
+          r.id, r.tanggal, r.jenis, r.kategori, r.jumlah, r.metode, r.deskripsi,
+          r.fileBase64 ? `<a href="${r.fileBase64}" download="bukti_${r.id}">Lihat</a>` : "-"
+        ]),
+        columns: [
+          { title: 'ID' }, { title: 'Tanggal' }, { title: 'Jenis' }, { title: 'Kategori' },
+          { title: 'Jumlah (Rp)', render: (data, type) => type === 'display' ? formatRibuan(data) : data },
+          { title: 'Metode' }, { title: 'Deskripsi' }, { title: "File" }
+        ],
+        pageLength: 5, responsive: true,
+        language:{ search:"_INPUT_", searchPlaceholder:"Cari...", paginate:{previous:"<",next:">"}, lengthMenu:"_MENU_ Baris", info: "Menampilkan _START_ s.d _END_ dari _TOTAL_ data", infoEmpty: "0 data", zeroRecords: "Tidak ada data" }
+      });
+
+      // Hitung total Pemasukan dan Pengeluaran
+      const totalIn = filtered.filter(f => f.jenis === 'Pemasukan').reduce((a, b) => a + Number(b.jumlah), 0);
+      const totalOut = filtered.filter(f => f.jenis !== 'Pemasukan').reduce((a, b) => a + Number(b.jumlah), 0);
+      
+      // Update angka di Card Atas
+      $("#cardPemasukan").text('Rp ' + formatRibuan(totalIn));
+      $("#cardPengeluaran").text('Rp ' + formatRibuan(totalOut));
+      $("#cardSaldo").text('Rp ' + formatRibuan(totalIn - totalOut));
+
+      Swal.close();
     }
+
 
     // ==========================================
     // FUNGSI BACKUP & RESTORE
