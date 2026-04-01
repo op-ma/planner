@@ -2,7 +2,7 @@
   "name": "Catatan Keuangan",
   "short_name": "PlannerKu",
   "description": "Aplikasi Keuangan",
-  "start_url": "/index.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#e0f0ff",
   "theme_color": "#4e73df",
