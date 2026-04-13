@@ -1,14 +1,14 @@
 {
   "name": "Catatan Keuangan",
-  "short_name": "PlannerKu",
-  "description": "Aplikasi Keuangan",
+  "short_name": "DompetKu",
+  "description": "Aplikasi Keuangan Pribadi",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#e0f0ff",
-  "theme_color": "#4e73df",
+  "theme_color": "#20c997",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/2620/2620402.png",
+      "src": "https://cdn-icons-png.flaticon.com/512/2331/2331941.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
