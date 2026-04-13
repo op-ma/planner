@@ -20,8 +20,6 @@
       --color-muted: #888;
       --radius-lg: 16px;
       --radius-md: 12px;
-      --color-pemasukan: #20c997;
-      --color-pengeluaran: #e74a3b;
     }
 
     body { font-family: var(--font-family); background: var(--color-bg); color: var(--color-text); padding-bottom: 80px; overflow-x: hidden; font-size: 14px;}
@@ -89,8 +87,8 @@
     .input-header h5 { margin: 0; font-weight: 600; font-size: 1rem; }
     .toggle-container { display: flex; background: #f1f3f5; border-radius: 20px; margin: 12px 15px; padding: 4px; }
     .toggle-btn { flex: 1; padding: 6px; border-radius: 16px; border: none; background: transparent; font-weight: 600; font-size:0.8rem; color: var(--color-muted); transition: 0.3s; }
-    .toggle-btn.active-in { background: var(--color-pemasukan); color: white; box-shadow: 0 2px 6px rgba(32, 201, 151, 0.3); }
-    .toggle-btn.active-out { background: var(--color-pengeluaran); color: white; box-shadow: 0 2px 6px rgba(231, 74, 59, 0.3); }
+    .toggle-btn.active-in { background: #20c997; color: white; box-shadow: 0 2px 6px rgba(32, 201, 151, 0.3); }
+    .toggle-btn.active-out { background: #e74a3b; color: white; box-shadow: 0 2px 6px rgba(231, 74, 59, 0.3); }
     .display-nominal { text-align: center; padding: 0 20px; margin-bottom: 5px; }
     .display-nominal .currency { font-size: 1rem; color: var(--color-muted); vertical-align: top; margin-right: 5px; }
     .display-nominal .amount { font-size: 2.2rem; font-weight: 700; color: #333; line-height: 1; word-break: break-all; }
@@ -136,60 +134,22 @@
     .small-swal-input:focus { border-color: var(--color-primary) !important; box-shadow: none !important; }
     .small-swal-actions { gap: 8px !important; margin-top: 10px !important; }
 
-    /* --- DESKTOP DATA TABLE HELPERS --- */
-    table.dataTable th { background: var(--color-primary); color: white; border:none; text-align: center; font-size: 0.8rem;}
-    table.dataTable td { font-size: 0.8rem; vertical-align: middle; }
-    .card-mobile-layout { display: none; }
-    .desktop-only { display: inline-block; }
+    /* --- PENGATURAN DATA TABLE (RESPONSIVE TABLE VIEW) --- */
+    .table-container { width: 100%; overflow: hidden; } 
+    table.dataTable { width: 100% !important; margin-top: 0 !important; font-size: 0.75rem; border-collapse: collapse !important; }
+    table.dataTable th { background: var(--color-primary); color: white; border: 1px solid #eaecf4; text-align: center; padding: 10px 8px; font-weight: 600; font-size: 0.75rem;}
+    table.dataTable td { border: 1px solid #eaecf4; vertical-align: middle; padding: 10px 8px; font-size: 0.75rem;}
+    
+    .dataTables_wrapper .dataTables_filter input { border-radius: 8px; border: 1px solid #eaecf4; padding: 4px 10px; font-size:0.75rem; margin-left: 8px; outline: none; }
+    .dataTables_wrapper .dataTables_filter input:focus { border-color: var(--color-primary); }
+
     .text-success { color: #20c997 !important; }
     .text-danger { color: #e74a3b !important; }
 
-    .dataTables_wrapper .dataTables_filter input { border-radius: 8px; border: 1px solid #eaecf4; padding: 4px 10px; font-size:0.8rem; margin-left: 8px; outline: none; }
-    .dataTables_wrapper .dataTables_filter input:focus { border-color: var(--color-primary); }
-
-    /* --- MOBILE DATA TABLE AS CARDS (PENDEK, FLAT, MEMANJANG KE SAMPING LAYAR HP) --- */
     @media (max-width: 768px) {
-      /* Padding container dinolkan agar mentok kiri kanan layar */
-      #view-transaksi .app-container { padding: 0.5rem 0; max-width: 100%; }
-      .dataTables_wrapper { padding: 0; }
-      table.dataTable { width: 100% !important; margin: 0 !important; border-collapse: collapse !important;}
-
-      #tabelData thead, #detailTable thead { display: none; }
-      
-      /* Card Flat & Pendek Membentang Penuh (Lebar Penuh) */
-      #tabelData tbody tr, #detailTable tbody tr {
-        display: block; width: 100%;
-        background: white; 
-        border-radius: 0; 
-        padding: 10px 15px; /* Padding sangat ringkas (vertikal 10px) */
-        margin-bottom: 0; 
-        border: none; 
-        border-bottom: 1px solid #eaecf4; /* Pemisah tipis */
-        box-shadow: none;
-      }
-      
-      #tabelData tbody td, #detailTable tbody td { display: none; border: none; padding: 0; text-align: left; }
-      /* Hanya tampilkan sel layout mobile (kolom ke-3) */
-      #tabelData tbody td:nth-child(3), #detailTable tbody td:nth-child(3) { display: block; width: 100%; }
-      .desktop-only { display: none !important; }
-      
-      .card-mobile-layout { display: flex !important; align-items: center; gap: 12px; width: 100%; }
-      
-      /* Ikon Kategori Diperkecil */
-      .icon-box-sm { 
-          width: 36px; height: 36px; border-radius: 10px; 
-          display: flex; align-items: center; justify-content: center; 
-          font-size: 1.1rem; flex-shrink: 0;
-      }
-      .icon-in { background: #e8f8f5; color: #20c997; }
-      .icon-out { background: #fceceb; color: #e74a3b; }
-
-      /* Pill Nama Dompet */
-      .pill-tag {
-          display: inline-flex; align-items: center; gap: 4px; 
-          padding: 2px 8px; border-radius: 20px; 
-          font-size: 0.65rem; color: #666; background: #f1f3f5; font-weight: 500;
-      }
+      #view-transaksi .app-container { padding: 0.8rem 0; max-width: 100%; }
+      .dataTables_wrapper { padding: 0 10px; }
+      table.dataTable td, table.dataTable th { padding: 8px 4px; }
     }
   </style>
 
@@ -212,7 +172,7 @@
       </div>
 
       <div class="saldo-card">
-        <p class="label">Total Saldo <span id="lblDompetAktif" style="font-size:0.65rem"></span></p>
+        <p class="label">Total Saldo Keseluruhan <span id="lblDompetAktif" style="font-size:0.65rem"></span></p>
         <div class="amount">
           <span id="homeTotalSaldo">Rp 0</span>
           <i class="bi bi-eye" id="toggleSaldo" onclick="toggleSaldoVis()"></i>
@@ -273,7 +233,9 @@
         <div class="d-flex gap-2">
           <select id="filterPeriode" class="form-select form-select-sm border-0 shadow-sm" style="width:auto; font-size:0.75rem; border-radius: 8px;">
             <option value="all">Semua</option>
+            <option value="mingguan">Minggu Ini</option>
             <option value="bulanan">Bulan Ini</option>
+            <option value="bulan_lalu">Bulan Lalu</option>
             <option value="tahunan">Tahun Ini</option>
           </select>
           <input type="file" id="fileRestore" accept=".json" style="display: none;">
@@ -281,8 +243,11 @@
           <button class="btn btn-sm btn-light shadow-sm border-0 text-success" style="font-size:0.85rem; border-radius: 8px;" onclick="backupData()"><i class="bi bi-cloud-download"></i></button>
         </div>
       </div>
-      <div class="item-card table-responsive p-0 rounded-0 bg-transparent mb-0 shadow-none">
-        <table id="tabelData" class="table align-middle w-100 m-0"></table>
+      
+      <div class="item-card p-0 rounded-0 bg-transparent mb-0 shadow-none">
+        <div class="table-container">
+          <table id="tabelData" class="table table-striped dt-responsive nowrap w-100 m-0"></table>
+        </div>
       </div>
     </div>
   </div>
@@ -545,7 +510,9 @@
               <div class="col-4"><div class="card bg-danger text-white border-0 shadow-sm"><div class="card-body p-2"><h6 style="font-size:0.65rem; margin:0;">Keluar</h6><h6 id="cardPengeluaran" class="mt-1 mb-0 fw-bold fs-6">0</h6></div></div></div>
               <div class="col-4"><div class="card bg-primary text-white border-0 shadow-sm"><div class="card-body p-2"><h6 style="font-size:0.65rem; margin:0;">Saldo</h6><h6 id="cardSaldo" class="mt-1 mb-0 fw-bold fs-6">0</h6></div></div></div>
            </div>
-           <div class="table-responsive"><table id="detailTable" class="table table-striped table-bordered w-100"></table></div>
+           <div class="table-container">
+               <table id="detailTable" class="table table-striped dt-responsive nowrap w-100"></table>
+           </div>
          </div>
       </div>
     </div>
@@ -631,7 +598,6 @@
       });
     }
 
-    /* KONFIGURASI SWAL UNTUK FORM KECIL */
     const swalSmallConfig = {
       customClass: { popup: 'small-swal-popup', title: 'small-swal-title', input: 'small-swal-input', actions: 'small-swal-actions', confirmButton: 'btn btn-sm btn-primary px-3 py-1', cancelButton: 'btn btn-sm btn-secondary px-3 py-1' },
       buttonsStyling: false
@@ -744,6 +710,7 @@
       dompetData.forEach(r => {
         const amt = Number(r.jumlah); const tgl = new Date(r.tanggal);
         const isM = tgl.getMonth() === m && tgl.getFullYear() === y;
+        
         if(r.jenis === 'Pemasukan') { tIn += amt; if(isM) mIn += amt; } else { tOut += amt; if(isM) mOut += amt; }
       });
 
@@ -755,7 +722,6 @@
       if(p > 100) { bar.css("background-color", "var(--color-pengeluaran)"); } else { bar.css("background-color", "var(--color-primary)"); }
     }
 
-    /* PENGGUNAAN JQUERY $('#id').modal('show') UNTUK MENCEGAH BUG BACKDROP */
     function openInputModal(preset = 'Pemasukan') {
       editId = null; currentNominalString = "0"; $("#inputKeterangan").val('');
       $("#modalInputTitle").text("Input Transaksi");
@@ -948,67 +914,68 @@
       $("#tglAwal, #tglAkhir, #filterDompetLaporan").on('change', loadDetailData);
       $("#fileRestore").change(restoreData);
       
+      /* FITUR FILTER TABEL MINGGU, BULAN, BULAN LALU, TAHUN */
       $.fn.dataTable.ext.search.push(function (settings, data) {
         if(settings.nTable.id !== 'tabelData') return true;
         const periode = $('#filterPeriode').val(); if (!periode || periode === 'all') return true;
-        const tanggal = new Date(data[0]); const now = new Date();
-        if (periode === 'bulanan') return tanggal.getMonth() === now.getMonth() && tanggal.getFullYear() === now.getFullYear();
-        if (periode === 'tahunan') return tanggal.getFullYear() === now.getFullYear();
+        
+        const rowDate = new Date(data[0]); const now = new Date();
+        
+        if (periode === 'mingguan') {
+            const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay());
+            const endOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() + (6 - now.getDay()), 23, 59, 59);
+            return rowDate >= startOfWeek && rowDate <= endOfWeek;
+        }
+        if (periode === 'bulanan') return rowDate.getMonth() === now.getMonth() && rowDate.getFullYear() === now.getFullYear();
+        if (periode === 'bulan_lalu') {
+            const lastMonth = new Date(now);
+            lastMonth.setMonth(now.getMonth() - 1);
+            return rowDate.getMonth() === lastMonth.getMonth() && rowDate.getFullYear() === lastMonth.getFullYear();
+        }
+        if (periode === 'tahunan') return rowDate.getFullYear() === now.getFullYear();
         return true;
       });
     });
 
+    /* --- MENAMPILKAN DATA DENGAN TABLE VIEW & RESPONSIVE TOGGLE --- */
     async function loadData() {
-      const data = await db.transaksi.reverse().toArray(); 
+      const data = await db.transaksi.toArray(); 
       if (dataTable) dataTable.clear().destroy();
       
       const dtData = data.map(r => {
           const isIncome = r.jenis === 'Pemasukan';
           const colorClass = isIncome ? 'text-success' : 'text-danger';
-          const iconBg = isIncome ? 'icon-in' : 'icon-out';
-          
-          const d = new Date(r.tanggal);
-          const monthNames = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
-          const tglStr = `${d.getDate()} ${monthNames[d.getMonth()]} ${d.getFullYear().toString().substr(-2)}`;
           
           return [ 
-              r.tanggal, r.jenis, 
-              // HTML Kustom: Card Flat Pendek dan Memanjang Ke Samping (Cuma 2 Baris)
-              `<div class="card-mobile-layout">
-                  <div class="icon-box-sm ${iconBg}"><i class="bi ${getCategoryIcon(r.kategori)}"></i></div>
-                  <div class="w-100 d-flex flex-column justify-content-center">
-                      <div class="d-flex justify-content-between align-items-center mb-1">
-                          <span class="fw-bold text-dark" style="font-size: 0.9rem; line-height: 1;">${r.kategori}</span>
-                          <span class="fw-bold ${colorClass}" style="font-size: 1.05rem; line-height: 1;">Rp ${formatRibuan(r.jumlah)}</span>
-                      </div>
-                      <div class="d-flex justify-content-between align-items-center">
-                          <div class="d-flex align-items-center gap-2">
-                              <span class="text-muted" style="font-size: 0.7rem; line-height: 1;">${tglStr}</span>
-                              <span class="pill-tag">${r.metode}</span>
-                          </div>
-                          <div class="d-flex gap-3 align-items-center">
-                              <i class="bi bi-pencil text-success" style="font-size:1.05rem; cursor:pointer;" onclick="editData(${r.id})"></i>
-                              <i class="bi bi-trash text-danger" style="font-size:1.05rem; cursor:pointer;" onclick="delTransaksi(${r.id})"></i>
-                          </div>
-                      </div>
-                  </div>
-              </div>`,
-              `<span class="desktop-only ${colorClass} fw-bold">Rp ${formatRibuan(r.jumlah)}</span>`, 
-              `<span class="desktop-only">${r.metode}</span>`, 
-              `<span class="desktop-only">${r.deskripsi}</span>`, 
-              `<span class="desktop-only">
-                  <i class="bi bi-pencil text-success" style="font-size:1.05rem; cursor:pointer; margin-right:8px;" onclick="editData(${r.id})"></i>
-                  <i class="bi bi-trash text-danger" style="font-size:1.05rem; cursor:pointer;" onclick="delTransaksi(${r.id})"></i>
-               </span>`
+              r.tanggal, 
+              `<span class="fw-bold">${r.kategori}</span>`, 
+              `<span class="${colorClass} fw-bold">Rp ${formatRibuan(r.jumlah)}</span>`, 
+              `<div class="d-flex justify-content-center gap-2">
+                  <i class="bi bi-pencil-square text-primary" style="font-size:1.1rem; cursor:pointer;" onclick="editData(${r.id})"></i>
+                  <i class="bi bi-trash text-danger" style="font-size:1.1rem; cursor:pointer;" onclick="delTransaksi(${r.id})"></i>
+               </div>`,
+              r.jenis, 
+              r.metode, 
+              r.deskripsi || '-' 
           ];
       });
       
       dataTable = $('#tabelData').DataTable({ 
-          data: dtData, order: [], 
-          columns: [ { title: "Tanggal" }, { title: "Jenis" }, { title: "Kategori" }, { title: "Jumlah (Rp)" }, { title: "Dompet" }, { title: "Deskripsi" }, { title: "Aksi", orderable:false } ], 
-          pageLength: 15, responsive: false, language:{ search:"", searchPlaceholder:"Cari...", lengthMenu:"_MENU_" } 
+          data: dtData, 
+          order: [[0, 'desc']], // MENGURUTKAN BERDASARKAN TANGGAL TERBARU DI ATAS
+          responsive: true, 
+          columns: [ 
+            { title: "Tgl", width: "20%" }, 
+            { title: "Kategori", width: "30%" }, 
+            { title: "Jumlah", width: "30%" }, 
+            { title: "Aksi", orderable:false, width: "20%" },
+            { title: "Jenis Transaksi", className: "none" }, 
+            { title: "Sumber Dompet", className: "none" }, 
+            { title: "Keterangan", className: "none" } 
+          ], 
+          pageLength: 15, language:{ search:"", searchPlaceholder:"Cari...", lengthMenu:"_MENU_" } 
       });
-      if (currentFilterJenis) { dataTable.column(1).search('^' + currentFilterJenis + '$', true, false).draw(); }
+      if (currentFilterJenis) { dataTable.column(4).search('^' + currentFilterJenis + '$', true, false).draw(); }
     }
 
     function delTransaksi(id) { 
@@ -1019,13 +986,13 @@
 
     function handleQuickSearch(e) { if(e.key === 'Enter') { const k = $("#quickSearch").val(); currentFilterJenis = ""; switchView('view-transaksi', $("#navData")); setTimeout(() => { if(dataTable) dataTable.search(k).draw(); }, 100); } }
 
-    /* --- FUNGSI LAPORAN --- */
+    /* --- FUNGSI LAPORAN (WITH RESPONSIVE TOGGLE) --- */
     async function loadDetailData() {
       const tA = $("#tglAwal").val(), tAk = $("#tglAkhir").val(), df = $("#filterDompetLaporan").val();
       let d1 = tA ? new Date(tA) : null; if(d1) d1.setHours(0,0,0,0);
       let d2 = tAk ? new Date(tAk) : null; if(d2) d2.setHours(23,59,59,999);
       
-      const data = await db.transaksi.reverse().toArray();
+      const data = await db.transaksi.toArray();
       const filtered = data.filter(d => {
         if(df !== 'all' && d.metode !== df) return false;
         if(!d1 && !d2) return true; 
@@ -1038,11 +1005,26 @@
       detailTable = $('#detailTable').DataTable({ 
         data: filtered.map(r => {
           const isIncome = r.jenis === 'Pemasukan'; const colorClass = isIncome ? 'text-success' : 'text-danger';
-          const d = new Date(r.tanggal); const tglFormatted = d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
-          return [ r.tanggal, r.jenis, `<div class="fw-bold">${r.kategori}</div><div class="small text-muted">${tglFormatted}</div>`, `<span class="${colorClass} fw-bold">Rp ${formatRibuan(r.jumlah)}</span>`, r.metode, r.deskripsi ]
+          return [ 
+            r.tanggal, 
+            r.kategori, 
+            `<span class="${colorClass} fw-bold">Rp ${formatRibuan(r.jumlah)}</span>`, 
+            r.jenis, 
+            r.metode, 
+            r.deskripsi || '-' 
+          ];
         }), 
-        order: [], columns: [ {title:'Tgl'}, {title:'Jenis'}, {title:'Kategori'}, {title:'Jumlah'}, {title:'Dompet'}, {title:'Ket'} ], 
-        pageLength: 5, responsive: false, lengthChange: false, searching: false,
+        order: [[0, 'desc']], // MENGURUTKAN BERDASARKAN TANGGAL TERBARU DI ATAS
+        responsive: true,
+        columns: [ 
+          {title:'Tgl'}, 
+          {title:'Kategori'}, 
+          {title:'Jumlah'}, 
+          {title:'Jenis', className: 'none'}, 
+          {title:'Dompet', className: 'none'}, 
+          {title:'Ket', className: 'none'} 
+        ], 
+        pageLength: 5, lengthChange: false, searching: false,
       });
 
       const inTot = filtered.filter(f => f.jenis === 'Pemasukan').reduce((a, b) => a + Number(b.jumlah), 0);
