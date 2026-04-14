@@ -21,6 +21,7 @@
       --color-muted: #888;
       --radius-lg: 16px;
       --radius-md: 12px;
+      --color-pengeluaran: #e74a3b;
     }
 
     body { font-family: var(--font-family); background: var(--color-bg); color: var(--color-text); padding-bottom: 80px; overflow-x: hidden; font-size: 14px;}
@@ -58,7 +59,7 @@
     .icon-lap { background: #e1f5fe; color: #03a9f4; }
 
     .section-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 0 0.5rem;}
-    .section-title h5 { font-size: 0.9rem; font-weight: 600; margin: 0; }
+    .section-title h5 { font-size: 0.9rem; font-weight: 600; margin: 0; display: flex; align-items: center;}
 
     .budget-card, .search-card, .item-card { background: white; border-radius: var(--radius-md); padding: 12px 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); margin-bottom: 0.8rem; }
     .budget-card .amount { font-size: 1.2rem; font-weight: 600; margin: 2px 0; }
@@ -203,12 +204,14 @@
         </div>
       </div>
 
-      <div class="section-title"><h5>Anggaran Bulanan <i class="bi bi-gear ms-1" style="color:#aaa"></i></h5></div>
+      <div class="section-title">
+        <h5>Anggaran Bulanan <i class="bi bi-gear ms-2" style="color:#aaa; cursor:pointer;" onclick="setAnggaran()" title="Atur Batas Anggaran"></i></h5>
+      </div>
       <div class="budget-card">
         <p class="subtitle mb-1">Pengeluaran Bulan Ini (<span id="lblBulanIni"></span>)</p>
         <div class="amount" id="homePengeluaranBudget">Rp 0</div>
         <p class="subtitle d-flex justify-content-between mb-0 mt-1">
-          <span>Batas: Belum diatur</span>
+          <span id="lblBatasBudget">Batas: Belum diatur</span>
           <span id="budgetRatioText" style="display:none;">0% terpakai</span>
         </p>
         <div class="progress-bar-custom">
@@ -232,6 +235,11 @@
       <div class="filter-actions px-3">
         <h6 class="mb-0 fw-bold"><i class="bi bi-table"></i> Transaksi</h6>
         <div class="d-flex gap-2">
+          
+          <select id="filterDompetTransaksi" class="form-select form-select-sm border-0 shadow-sm" style="width:auto; font-size:0.75rem; border-radius: 8px;">
+            <option value="all">Semua Dompet</option>
+          </select>
+          
           <select id="filterPeriode" class="form-select form-select-sm border-0 shadow-sm" style="width:auto; font-size:0.75rem; border-radius: 8px;">
             <option value="all">Semua</option>
             <option value="mingguan">Minggu Ini</option>
@@ -565,11 +573,15 @@
 
     function initReferensi() {
       const stored = localStorage.getItem('halimah_referensi_v4');
-      if (stored) { referensiData = JSON.parse(stored); } 
+      if (stored) { 
+          referensiData = JSON.parse(stored); 
+          if(referensiData.anggaranBulanan === undefined) referensiData.anggaranBulanan = 0;
+      } 
       else {
         referensiData = {
           kategoriPerJenis: { "Pemasukan": ["Gaji", "Mukafaah", "Bisnis", "Lain-lain"], "Pengeluaran": ["Makan Minum", "Transportasi", "Tagihan", "Belanja"] },
-          metode: ["Dompet Utama", "Rekening BCA", "OVO", "Cash"]
+          metode: ["Dompet Utama", "Rekening BCA", "OVO", "Cash"],
+          anggaranBulanan: 0
         }; saveReferensiLocal();
       }
     }
@@ -579,7 +591,13 @@
       let currentDompet = $("#homeDompetSelect").val() || referensiData.metode[0];
       $("#homeDompetSelect").html(referensiData.metode.map(m => `<option value="${m}" ${m === currentDompet ? 'selected' : ''}>${m}</option>`).join(''));
       $("#inputDompetSelect").html(referensiData.metode.map(m => `<option value="${m}">${m}</option>`).join(''));
-      $("#filterDompetLaporan").html(`<option value="all">Semua</option>` + referensiData.metode.map(m => `<option value="${m}">${m}</option>`).join(''));
+      
+      // Update filter untuk Transaksi dan Laporan
+      const opsiSemua = `<option value="all">Semua Dompet</option>`;
+      const opsiDompet = referensiData.metode.map(m => `<option value="${m}">${m}</option>`).join('');
+      $("#filterDompetTransaksi").html(opsiSemua + opsiDompet);
+      $("#filterDompetLaporan").html(`<option value="all">Semua</option>` + opsiDompet);
+      
       $("#selectJenisForKategori").html(`<option value="" disabled selected hidden>Pilih Jenis</option>${Object.keys(referensiData.kategoriPerJenis).map(j => `<option value="${j}">${j}</option>`).join('')}`);
       renderWalletList(); renderCategoryList();
     }
@@ -603,6 +621,31 @@
       customClass: { popup: 'small-swal-popup', title: 'small-swal-title', input: 'small-swal-input', actions: 'small-swal-actions', confirmButton: 'btn btn-sm btn-primary px-3 py-1', cancelButton: 'btn btn-sm btn-secondary px-3 py-1' },
       buttonsStyling: false
     };
+
+    async function setAnggaran() {
+      const { value: add } = await Swal.fire({ 
+        title: 'Atur Anggaran Bulanan', 
+        input: 'text', 
+        inputPlaceholder: 'Nominal Rp', 
+        inputValue: referensiData.anggaranBulanan > 0 ? formatRibuan(referensiData.anggaranBulanan) : '',
+        didOpen: () => {
+          const input = Swal.getInput();
+          input.oninput = () => formatInputRibuan(input);
+        },
+        ...swalSmallConfig, 
+        showCancelButton: true, 
+        confirmButtonText:'Simpan', 
+        cancelButtonText:'Batal' 
+      });
+
+      if(add !== undefined) { 
+          const val = unformatRibuan(add);
+          referensiData.anggaranBulanan = val; 
+          saveReferensiLocal(); 
+          updateDashboard();
+          Swal.fire({icon:'success', title:'Anggaran disimpan', showConfirmButton:false, timer:1000, ...swalSmallConfig}); 
+      }
+    }
 
     async function editMetode(oldVal) {
       $('#settingsModal').modal('hide'); 
@@ -716,11 +759,31 @@
       });
 
       if(!isSaldoHidden) $("#homeTotalSaldo").text(`Rp ${formatRibuan(tIn - tOut)}`);
-      $("#homePemasukan").text(`Rp ${formatRibuan(mIn)}`); $("#homePengeluaran, #homePengeluaranBudget").text(`Rp ${formatRibuan(mOut)}`);
+      $("#homePemasukan").text(`Rp ${formatRibuan(mIn)}`); 
+      $("#homePengeluaran, #homePengeluaranBudget").text(`Rp ${formatRibuan(mOut)}`);
 
-      let p = 0; if (mIn > 0) p = (mOut / mIn) * 100; else if (mOut > 0) p = 100; 
-      const bar = $("#budgetProgressBar"); bar.css("width", `${Math.min(p, 100)}%`);
-      if(p > 100) { bar.css("background-color", "var(--color-pengeluaran)"); } else { bar.css("background-color", "var(--color-primary)"); }
+      // Fungsi Anggaran Bulanan Berjalan Disini
+      let budget = referensiData.anggaranBulanan || 0;
+      let bar = $("#budgetProgressBar");
+      
+      if(budget > 0) {
+          $("#lblBatasBudget").text(`Batas: Rp ${formatRibuan(budget)}`);
+          $("#budgetRatioText").show();
+          let p = (mOut / budget) * 100;
+          bar.css("width", `${Math.min(p, 100)}%`);
+          
+          if(p > 100) { 
+              bar.css("background-color", "var(--color-pengeluaran)"); 
+              $("#budgetRatioText").css("color", "var(--color-pengeluaran)").text("Melebihi batas!");
+          } else { 
+              bar.css("background-color", "var(--color-primary)"); 
+              $("#budgetRatioText").css("color", "").text(`${Math.round(p)}% terpakai`);
+          }
+      } else {
+          $("#lblBatasBudget").text(`Batas: Belum diatur`);
+          $("#budgetRatioText").hide();
+          bar.css("width", "0%");
+      }
     }
 
     function openInputModal(preset = 'Pemasukan') {
@@ -911,13 +974,23 @@
       initReferensi(); loadDropdown(); await updateDashboard();
       
       $('#filterPeriode').change(() => dataTable.draw());
+      
+      // Pemicu filter saat dompet transaksi diubah
+      $('#filterDompetTransaksi').change(() => dataTable.draw());
+
       $('#detailModal').on('shown.bs.modal', loadDetailData);
       $("#tglAwal, #tglAkhir, #filterDompetLaporan").on('change', loadDetailData);
       $("#fileRestore").change(restoreData);
       
-      /* FITUR FILTER TABEL MINGGU, BULAN, BULAN LALU, TAHUN */
+      /* FITUR FILTER TABEL MINGGU, BULAN, BULAN LALU, TAHUN & DOMPET */
       $.fn.dataTable.ext.search.push(function (settings, data) {
         if(settings.nTable.id !== 'tabelData') return true;
+        
+        // Cek Filter Dompet
+        const filterDompet = $('#filterDompetTransaksi').val();
+        if (filterDompet !== 'all' && data[5] !== filterDompet) return false;
+
+        // Cek Filter Periode Waktu
         const periode = $('#filterPeriode').val(); if (!periode || periode === 'all') return true;
         
         const rowDate = new Date(data[0]); const now = new Date();
