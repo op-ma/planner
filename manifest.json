@@ -1,10 +1,10 @@
 {
-  "name": "Catatan Keuangan",
+  "name": "DompetKu App",
   "short_name": "DompetKu",
-  "description": "Aplikasi Keuangan Pribadi",
+  "description": "Aplikasi Pencatat Keuangan Pribadi",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#e0f0ff",
+  "background_color": "#f8f9fa",
   "theme_color": "#20c997",
   "icons": [
     {
