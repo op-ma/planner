@@ -246,6 +246,12 @@
         </div>
       </div>
 
+      <div class="section-title mt-3">
+        <h5>Rincian Kategori</h5>
+      </div>
+      <div class="item-card" id="kategoriBreakdownContainer">
+          </div>
+
       <div class="section-title mt-3"><h5>Pencarian Cepat</h5></div>
       <div class="search-card">
         <div class="input-group">
@@ -284,8 +290,13 @@
           <button class="btn btn-sm btn-light shadow-sm border-0 text-primary-custom" style="font-size:0.85rem; border-radius: 8px;" onclick="backupData()"><i class="bi bi-cloud-download"></i></button>
         </div>
       </div>
+
+      <div class="d-flex justify-content-between px-3 mt-1 mb-2">
+         <span class="small fw-bold text-income" id="filterTotalIn">Masuk: Rp 0</span>
+         <span class="small fw-bold text-expense" id="filterTotalOut">Keluar: Rp 0</span>
+      </div>
       
-      <div id="transaksiCardContainer" class="mt-3 px-1 pb-4">
+      <div id="transaksiCardContainer" class="mt-2 px-1 pb-4">
           </div>
     </div>
   </div>
@@ -839,19 +850,59 @@
         }
       });
 
-      // MENGHITUNG PENGELUARAN UNTUK ANGGARAN BERDASARKAN FILTER DOMPET & BULAN
+      // MENGHITUNG PENGELUARAN UNTUK ANGGARAN & BREAKDOWN KATEGORI
       let totalBulanIniOut = 0;
       let filterDompetBeranda = $("#filterDompetBeranda").val() || 'all';
+
+      // Variabel untuk menampung hitungan per kategori
+      let catIn = {};
+      let catOut = {};
 
       allData.forEach(r => {
         const amt = Number(r.jumlah); const tgl = new Date(r.tanggal);
         const isM = tgl.getMonth() === m && tgl.getFullYear() === y;
-        if(r.jenis !== 'Pemasukan' && isM) {
+        
+        if(isM) {
+            // Cek apakah masuk filter dompet (berlaku untuk budget & kategori)
             if (filterDompetBeranda === 'all' || r.metode === filterDompetBeranda) {
-                totalBulanIniOut += amt;
+                if (r.jenis === 'Pemasukan') {
+                    catIn[r.kategori] = (catIn[r.kategori] || 0) + amt;
+                } else {
+                    totalBulanIniOut += amt;
+                    catOut[r.kategori] = (catOut[r.kategori] || 0) + amt;
+                }
             }
         }
       });
+
+      // --- RENDER RINCIAN KATEGORI ---
+      let catHtml = '';
+      if (Object.keys(catIn).length > 0) {
+          catHtml += `<div class="fw-bold text-success mb-2 mt-1" style="font-size:0.75rem;">PEMASUKAN</div>`;
+          for (const [k, v] of Object.entries(catIn).sort((a,b)=>b[1]-a[1])) {
+              catHtml += `
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="small text-muted"><i class="bi ${getCategoryIcon(k)} me-2"></i> ${k}</span>
+                  <span class="small fw-bold text-success">Rp ${formatRibuan(v)}</span>
+              </div>`;
+          }
+      }
+      
+      if (Object.keys(catOut).length > 0) {
+          if(catHtml !== '') catHtml += `<hr class="my-2 border-secondary opacity-25">`;
+          catHtml += `<div class="fw-bold text-danger mb-2 mt-1" style="font-size:0.75rem;">PENGELUARAN</div>`;
+          for (const [k, v] of Object.entries(catOut).sort((a,b)=>b[1]-a[1])) {
+              catHtml += `
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="small text-muted"><i class="bi ${getCategoryIcon(k)} me-2"></i> ${k}</span>
+                  <span class="small fw-bold text-danger">Rp ${formatRibuan(v)}</span>
+              </div>`;
+          }
+      }
+      
+      if(catHtml === '') catHtml = `<div class="text-center small text-muted my-3">Belum ada data di bulan ini.</div>`;
+      $("#kategoriBreakdownContainer").html(catHtml);
+      // ---------------------------------
 
       if(!isSaldoHidden) $("#homeTotalSaldo").text(`Rp ${formatRibuan(tIn - tOut)}`);
       $("#homePemasukan").text(`Rp ${formatRibuan(mIn)}`); 
@@ -1135,6 +1186,15 @@
         
         return true;
       });
+
+      // Hitung Total dari Data yang Difilter
+      let sumIn = 0, sumOut = 0;
+      filtered.forEach(r => {
+          if(r.jenis === 'Pemasukan') sumIn += Number(r.jumlah);
+          else sumOut += Number(r.jumlah);
+      });
+      $("#filterTotalIn").text(`Masuk: Rp ${formatRibuan(sumIn)}`);
+      $("#filterTotalOut").text(`Keluar: Rp ${formatRibuan(sumOut)}`);
 
       // Urutkan tanggal terbaru di atas, jika tanggal sama urutkan ID
       filtered.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal) || b.id - a.id);
