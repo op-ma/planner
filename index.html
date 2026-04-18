@@ -195,14 +195,24 @@
       </div>
 
       <div class="saldo-card">
-        <p class="label">Total Saldo Keseluruhan <span id="lblDompetAktif" style="font-size:0.65rem"></span></p>
-        <div class="amount">
-          <span id="homeTotalSaldo">Rp 0</span>
-          <i class="bi bi-eye" id="toggleSaldo" onclick="toggleSaldoVis()"></i>
-        </div>
-        <div class="bottom-info">
-          <div>Pemasukan <span class="lblBulanDinamic text-white-50"></span><br><strong id="homePemasukan" style="font-size:0.8rem">Rp 0</strong></div>
-          <div style="text-align: right;">Pengeluaran Dompet <span class="lblBulanDinamic text-white-50"></span><br><strong id="homePengeluaran" style="font-size:0.8rem">Rp 0</strong></div>
+        <div style="position: relative; z-index: 1;">
+            <div class="d-flex justify-content-between align-items-start">
+               <div>
+                  <p class="label mb-0">Saldo <span id="lblDompetAktif" class="fw-bold text-white"></span></p>
+                  <div class="amount mb-1">
+                    <span id="homeTotalSaldo">Rp 0</span>
+                    <i class="bi bi-eye ms-2" style="font-size:1.1rem;" id="toggleSaldo" onclick="toggleSaldoVis()"></i>
+                  </div>
+               </div>
+               <div class="text-end" style="background: rgba(255,255,255,0.15); padding: 5px 10px; border-radius: 8px;">
+                  <div style="font-size:0.6rem; opacity:0.9;">Total Semua Dompet</div>
+                  <div id="homeGrandTotal" class="fw-bold" style="font-size:0.85rem;">Rp 0</div>
+               </div>
+            </div>
+            <div class="bottom-info mt-2">
+              <div>Pemasukan <span class="lblBulanDinamic text-white-50"></span><br><strong id="homePemasukan" style="font-size:0.8rem">Rp 0</strong></div>
+              <div style="text-align: right;">Pengeluaran<span class="lblBulanDinamic text-white-50"></span><br><strong id="homePengeluaran" style="font-size:0.8rem">Rp 0</strong></div>
+            </div>
         </div>
       </div>
 
@@ -246,8 +256,8 @@
         </div>
       </div>
 
-      <div class="section-title mt-3">
-        <h5>Rincian Kategori</h5>
+      <div class="section-title mt-3" style="cursor: pointer;" onclick="toggleRincianKategori()">
+        <h5>Rincian Kategori <i class="bi bi-chevron-down ms-1" id="toggleRincianIcon" style="font-size: 0.9rem; color: #888; transition: 0.3s;"></i></h5>
       </div>
       <div class="item-card" id="kategoriBreakdownContainer">
           </div>
@@ -268,15 +278,12 @@
       <div class="filter-actions px-1">
         <h6 class="mb-0 fw-bold text-primary-custom"><i class="bi bi-card-list"></i> Transaksi</h6>
         <div class="d-flex gap-2 flex-wrap mt-2">
-          
           <select id="filterDompetTransaksi" class="form-select form-select-sm border-0 shadow-sm flex-fill" style="width:auto; font-size:0.75rem; border-radius: 8px;">
             <option value="all">Semua Dompet</option>
           </select>
-
           <select id="filterKategoriTransaksi" class="form-select form-select-sm border-0 shadow-sm flex-fill" style="width:auto; font-size:0.75rem; border-radius: 8px;">
             <option value="all">Semua Kategori</option>
           </select>
-          
           <select id="filterPeriode" class="form-select form-select-sm border-0 shadow-sm flex-fill" style="width:auto; font-size:0.75rem; border-radius: 8px;">
             <option value="all">Semua Waktu</option>
             <option value="mingguan">Minggu Ini</option>
@@ -284,20 +291,16 @@
             <option value="bulan_lalu">Bulan Lalu</option>
             <option value="tahunan">Tahun Ini</option>
           </select>
-
           <input type="file" id="fileRestore" accept=".json" style="display: none;">
           <button class="btn btn-sm btn-light shadow-sm border-0 text-primary-custom" style="font-size:0.85rem; border-radius: 8px;" onclick="$('#fileRestore').click()"><i class="bi bi-cloud-upload"></i></button>
           <button class="btn btn-sm btn-light shadow-sm border-0 text-primary-custom" style="font-size:0.85rem; border-radius: 8px;" onclick="backupData()"><i class="bi bi-cloud-download"></i></button>
         </div>
       </div>
-
       <div class="d-flex justify-content-between px-3 mt-1 mb-2">
          <span class="small fw-bold text-income" id="filterTotalIn">Masuk: Rp 0</span>
          <span class="small fw-bold text-expense" id="filterTotalOut">Keluar: Rp 0</span>
       </div>
-      
-      <div id="transaksiCardContainer" class="mt-2 px-1 pb-4">
-          </div>
+      <div id="transaksiCardContainer" class="mt-2 px-1 pb-4"></div>
     </div>
   </div>
 
@@ -353,28 +356,36 @@
       <div class="modal-content">
         <div class="input-header">
           <button class="btn-close-custom" data-bs-dismiss="modal"><i class="bi bi-x"></i></button>
-          <h5 id="modalInputTitle">Input Transaksi</h5>
+          <h5 id="modalInputTitle">Catat Keuangan</h5>
         </div>
-        <div class="toggle-container">
+        
+        <div class="px-3 pt-3">
+            <label class="form-label small mb-1 fw-bold text-muted">Pilih Dompet</label>
+            <select id="inputDompetSelect" class="form-select form-select-sm border-0 bg-light py-2 shadow-sm mb-2" style="border-radius: 10px; font-weight: 600;" onchange="updateSumberDana()"></select>
+
+            <div id="sumberDanaContainer" style="display:none;" class="mt-2 mb-2">
+                <label class="form-label small mb-1 fw-bold text-muted">Ambil Dana Dari (Sisa Pemasukan)</label>
+                <select id="inputSumberDana" class="form-select form-select-sm border-0 bg-light py-2 shadow-sm text-primary-custom" style="border-radius: 10px; font-weight: 600;"></select>
+            </div>
+        </div>
+
+        <div class="toggle-container mt-1">
           <button class="toggle-btn active-in" id="btnTogglePemasukan" onclick="setJenisInput('Pemasukan')">Pemasukan</button>
           <button class="toggle-btn" id="btnTogglePengeluaran" onclick="setJenisInput('Pengeluaran')">Pengeluaran</button>
         </div>
+
         <div class="display-nominal">
           <span class="currency">Rp</span><span class="amount" id="displayNominal">0</span>
         </div>
         <div class="category-section">
-          <h6>Kategori</h6>
+          <h6>Pilih Kategori</h6>
           <div class="category-scroll" id="categoryContainer"></div>
         </div>
         <div class="note-section">
           <div class="row g-2 mb-2">
-            <div class="col-6">
+            <div class="col-12">
               <label class="form-label small mb-0 text-muted">Tanggal</label>
               <input type="date" id="inputTanggal" class="form-control form-control-sm border-0 bg-light">
-            </div>
-            <div class="col-6">
-              <label class="form-label small mb-0 text-muted">Dompet</label>
-              <select id="inputDompetSelect" class="form-select form-select-sm border-0 bg-light"></select>
             </div>
           </div>
           <input type="text" id="inputKeterangan" class="note-input border-0 bg-light" placeholder="Keterangan detail (Opsional)">
@@ -394,7 +405,7 @@
             <button class="key-btn" onclick="inputNum('0')">0</button>
             <button class="key-btn" onclick="deleteNum()"><i class="bi bi-backspace"></i></button>
           </div>
-          <button class="btn-simpan-custom" onclick="saveCustomInput()">Simpan <i class="bi bi-check2"></i></button>
+          <button class="btn-simpan-custom" onclick="saveCustomInput()">Simpan Catatan <i class="bi bi-check2"></i></button>
         </div>
       </div>
     </div>
@@ -515,9 +526,7 @@
             <button class="btn btn-sm text-white py-0 px-3" style="background-color: var(--color-primary);" onclick="addMetode()"><i class="bi bi-plus" style="font-size:1.2rem"></i></button>
           </div>
           <div class="mb-3" id="walletListContainer" style="max-height: 140px; overflow-y: auto;"></div>
-          
           <hr class="my-2">
-
           <h6 class="fw-bold mb-2 mt-2 text-primary-custom" style="font-size:0.8rem"><i class="bi bi-tags"></i> Kelola Kategori</h6>
           <select id="selectJenisForKategori" class="form-select form-select-sm mb-2" onchange="renderCategoryList()"></select>
           <div class="input-group mb-2">
@@ -584,8 +593,8 @@
     let referensiData = {};
     let detailTable; 
     let isSaldoHidden = false;
+    let isRincianHidden = false; // State untuk Rincian Kategori
 
-    // Filter Globals
     let currentFilterDompet = "all";
     let currentFilterKategori = "all";
     let currentFilterPeriode = "all";
@@ -641,11 +650,8 @@
       const opsiSemua = `<option value="all">Semua Dompet</option>`;
       const opsiDompet = referensiData.metode.map(m => `<option value="${m}">${m}</option>`).join('');
       
-      // Load to transaction and report dropdowns
       $("#filterDompetTransaksi").html(opsiSemua + opsiDompet);
       $("#filterDompetLaporan").html(`<option value="all">Semua</option>` + opsiDompet);
-      
-      // Load to new budget card dropdown
       $("#filterDompetBeranda").html(opsiSemua + opsiDompet);
 
       let allKategori = [];
@@ -799,26 +805,35 @@
     function viewFilteredData(jenis) { 
         currentFilterJenis = jenis; 
         window.isFiltering = true; 
-        
         currentFilterKategori = "all";
         $('#filterKategoriTransaksi').val('all'); 
         currentSearchKeyword = "";
         $('#quickSearch').val('');
-        
         switchView('view-transaksi', $('#navData')); 
     }
 
     function toggleSaldoVis() {
       isSaldoHidden = !isSaldoHidden;
-      if(isSaldoHidden) { $("#toggleSaldo").removeClass('bi-eye').addClass('bi-eye-slash'); $("#homeTotalSaldo").text("Rp •••••••"); } 
+      if(isSaldoHidden) { $("#toggleSaldo").removeClass('bi-eye').addClass('bi-eye-slash'); $("#homeTotalSaldo").text("Rp •••••••"); $("#homeGrandTotal").text("Rp •••••••"); } 
       else { $("#toggleSaldo").removeClass('bi-eye-slash').addClass('bi-eye'); updateDashboard(); }
+    }
+
+    // Fungsi Toggle Rincian Kategori
+    function toggleRincianKategori() {
+        isRincianHidden = !isRincianHidden;
+        if(isRincianHidden) {
+            $("#kategoriBreakdownContainer").slideUp(200);
+            $("#toggleRincianIcon").removeClass('bi-chevron-down').addClass('bi-chevron-right');
+        } else {
+            $("#kategoriBreakdownContainer").slideDown(200);
+            $("#toggleRincianIcon").removeClass('bi-chevron-right').addClass('bi-chevron-down');
+        }
     }
 
     async function updateDashboard() {
       const sel = $("#homeDompetSelect").val(); if(!sel) return;
       $("#lblDompetAktif").text(`(${sel})`);
       
-      // Mengambil bulan dari filter
       let filterVal = $("#filterBulanBeranda").val();
       const now = new Date();
       if (!filterVal) {
@@ -829,7 +844,6 @@
       let y = parseInt(filterVal.split('-')[0]);
       let m = parseInt(filterVal.split('-')[1]) - 1;
 
-      // Update Teks Dinamis Bulan
       const monthNames = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
       $(".lblBulanDinamic").text(`(${monthNames[m]} ${y})`);
 
@@ -840,106 +854,113 @@
       dompetData.forEach(r => {
         const amt = Number(r.jumlah); const tgl = new Date(r.tanggal);
         const isM = tgl.getMonth() === m && tgl.getFullYear() === y;
-        
-        if(r.jenis === 'Pemasukan') { 
-            tIn += amt; 
-            if(isM) mIn += amt; 
-        } else { 
-            tOut += amt; 
-            if(isM) mOut += amt; 
-        }
+        if(r.jenis === 'Pemasukan') { tIn += amt; if(isM) mIn += amt; } else { tOut += amt; if(isM) mOut += amt; }
       });
 
-      // MENGHITUNG PENGELUARAN UNTUK ANGGARAN & BREAKDOWN KATEGORI
       let totalBulanIniOut = 0;
       let filterDompetBeranda = $("#filterDompetBeranda").val() || 'all';
-
-      // Variabel untuk menampung hitungan per kategori
-      let catIn = {};
+      
+      let sisaDana = {};
       let catOut = {};
+      referensiData.kategoriPerJenis['Pemasukan'].forEach(k => sisaDana[k] = 0);
+
+      let grandIn = 0, grandOut = 0;
 
       allData.forEach(r => {
-        const amt = Number(r.jumlah); const tgl = new Date(r.tanggal);
+        const amt = Number(r.jumlah); 
+        const tgl = new Date(r.tanggal);
         const isM = tgl.getMonth() === m && tgl.getFullYear() === y;
         
-        if(isM) {
-            // Cek apakah masuk filter dompet (berlaku untuk budget & kategori)
-            if (filterDompetBeranda === 'all' || r.metode === filterDompetBeranda) {
-                if (r.jenis === 'Pemasukan') {
-                    catIn[r.kategori] = (catIn[r.kategori] || 0) + amt;
-                } else {
-                    totalBulanIniOut += amt;
-                    catOut[r.kategori] = (catOut[r.kategori] || 0) + amt;
-                }
+        if (r.jenis === 'Pemasukan') grandIn += amt;
+        else grandOut += amt;
+
+        if (filterDompetBeranda === 'all' || r.metode === filterDompetBeranda) {
+            if (r.jenis === 'Pemasukan') { 
+                sisaDana[r.kategori] = (sisaDana[r.kategori] || 0) + amt;
+            } else if (r.jenis === 'Pengeluaran' && r.sumberDana) { 
+                sisaDana[r.sumberDana] = (sisaDana[r.sumberDana] || 0) - amt;
+            }
+
+            if (r.jenis !== 'Pemasukan' && isM) {
+                totalBulanIniOut += amt; 
+                catOut[r.kategori] = (catOut[r.kategori] || 0) + amt;
             }
         }
       });
 
-      // --- RENDER RINCIAN KATEGORI ---
       let catHtml = '';
-      if (Object.keys(catIn).length > 0) {
-          catHtml += `<div class="fw-bold text-success mb-2 mt-1" style="font-size:0.75rem;">PEMASUKAN</div>`;
-          for (const [k, v] of Object.entries(catIn).sort((a,b)=>b[1]-a[1])) {
-              catHtml += `
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                  <span class="small text-muted"><i class="bi ${getCategoryIcon(k)} me-2"></i> ${k}</span>
-                  <span class="small fw-bold text-success">Rp ${formatRibuan(v)}</span>
-              </div>`;
+      if (Object.keys(sisaDana).length > 0) {
+          catHtml += `<div class="fw-bold text-success mb-2 mt-1" style="font-size:0.75rem;">SISA DANA PEMASUKAN</div>`;
+          for (const [k, v] of Object.entries(sisaDana).sort((a,b)=>b[1]-a[1])) {
+              catHtml += `<div class="d-flex justify-content-between align-items-center mb-2"><span class="small text-muted"><i class="bi ${getCategoryIcon(k)} me-2"></i> ${k}</span><span class="small fw-bold text-success">Rp ${formatRibuan(v)}</span></div>`;
           }
       }
-      
       if (Object.keys(catOut).length > 0) {
           if(catHtml !== '') catHtml += `<hr class="my-2 border-secondary opacity-25">`;
-          catHtml += `<div class="fw-bold text-danger mb-2 mt-1" style="font-size:0.75rem;">PENGELUARAN</div>`;
+          catHtml += `<div class="fw-bold text-danger mb-2 mt-1" style="font-size:0.75rem;">PENGELUARAN (Bulan Ini)</div>`;
           for (const [k, v] of Object.entries(catOut).sort((a,b)=>b[1]-a[1])) {
-              catHtml += `
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                  <span class="small text-muted"><i class="bi ${getCategoryIcon(k)} me-2"></i> ${k}</span>
-                  <span class="small fw-bold text-danger">Rp ${formatRibuan(v)}</span>
-              </div>`;
+              catHtml += `<div class="d-flex justify-content-between align-items-center mb-2"><span class="small text-muted"><i class="bi ${getCategoryIcon(k)} me-2"></i> ${k}</span><span class="small fw-bold text-danger">Rp ${formatRibuan(v)}</span></div>`;
           }
       }
-      
-      if(catHtml === '') catHtml = `<div class="text-center small text-muted my-3">Belum ada data di bulan ini.</div>`;
+      if(catHtml === '') catHtml = `<div class="text-center small text-muted my-3">Belum ada data.</div>`;
       $("#kategoriBreakdownContainer").html(catHtml);
-      // ---------------------------------
 
-      if(!isSaldoHidden) $("#homeTotalSaldo").text(`Rp ${formatRibuan(tIn - tOut)}`);
+      if(!isSaldoHidden) {
+          $("#homeTotalSaldo").text(`Rp ${formatRibuan(tIn - tOut)}`);
+          $("#homeGrandTotal").text(`Rp ${formatRibuan(grandIn - grandOut)}`);
+      }
       $("#homePemasukan").text(`Rp ${formatRibuan(mIn)}`); 
       $("#homePengeluaran").text(`Rp ${formatRibuan(mOut)}`);
       $("#homePengeluaranBudget").text(`Rp ${formatRibuan(totalBulanIniOut)}`);
 
-      // Fungsi Anggaran Bulanan
       let budget = referensiData.anggaranBulanan || 0;
       let bar = $("#budgetProgressBar");
-      
       if(budget > 0) {
           $("#lblBatasBudget").text(`Batas: Rp ${formatRibuan(budget)}`);
           $("#budgetRatioText").show();
           let p = (totalBulanIniOut / budget) * 100;
           bar.css("width", `${Math.min(p, 100)}%`);
-          
-          if(p > 100) { 
-              bar.css("background-color", "var(--color-pengeluaran)"); 
-              $("#budgetRatioText").css("color", "var(--color-pengeluaran)").text("Melebihi batas!");
-          } else { 
-              bar.css("background-color", "var(--color-primary)"); 
-              $("#budgetRatioText").css("color", "").text(`${Math.round(p)}% terpakai`);
-          }
-      } else {
-          $("#lblBatasBudget").text(`Batas: Belum diatur`);
-          $("#budgetRatioText").hide();
-          bar.css("width", "0%");
+          if(p > 100) { bar.css("background-color", "var(--color-pengeluaran)"); $("#budgetRatioText").css("color", "var(--color-pengeluaran)").text("Melebihi batas!"); } 
+          else { bar.css("background-color", "var(--color-primary)"); $("#budgetRatioText").css("color", "").text(`${Math.round(p)}% terpakai`); }
+      } else { $("#lblBatasBudget").text(`Batas: Belum diatur`); $("#budgetRatioText").hide(); bar.css("width", "0%"); }
+    }
+
+    async function updateSumberDana() {
+      if (currentInputMode !== 'Pengeluaran') return;
+      const dompet = $("#inputDompetSelect").val();
+      const all = await db.transaksi.toArray();
+      
+      let sisa = {};
+      referensiData.kategoriPerJenis['Pemasukan'].forEach(k => sisa[k] = 0);
+
+      all.forEach(r => {
+        if (r.metode !== dompet) return;
+        
+        if (r.jenis === 'Pemasukan') {
+            sisa[r.kategori] = (sisa[r.kategori] || 0) + Number(r.jumlah);
+        } else if (r.jenis === 'Pengeluaran' && r.sumberDana) {
+            if (editId !== null && r.id === editId) {
+            } else {
+                sisa[r.sumberDana] = (sisa[r.sumberDana] || 0) - Number(r.jumlah);
+            }
+        }
+      });
+
+      let opts = '<option value="" selected>-- Tidak Ada (Potong Saldo Utama) --</option>';
+      for (const [kat, jumlah] of Object.entries(sisa)) {
+          opts += `<option value="${kat}">${kat} (Sisa: Rp ${formatRibuan(jumlah)})</option>`;
       }
+      $("#inputSumberDana").html(opts);
     }
 
     function openInputModal(preset = 'Pemasukan') {
       editId = null; currentNominalString = "0"; $("#inputKeterangan").val('');
-      $("#modalInputTitle").text("Input Transaksi");
+      $("#modalInputTitle").text("Catat Keuangan");
       const tgl = new Date(); tgl.setMinutes(tgl.getMinutes() - tgl.getTimezoneOffset());
       $("#inputTanggal").val(tgl.toISOString().slice(0, 10));
       $("#inputDompetSelect").val($("#homeDompetSelect").val() || referensiData.metode[0]);
-      updateDisplayKeypad(); setJenisInput(preset); 
+      updateDisplayKeypad(); 
+      setJenisInput(preset); 
       $('#customInputModal').modal('show');
     }
 
@@ -947,30 +968,43 @@
       const data = await db.transaksi.get(id); if (!data) return;
       editId = id; $("#modalInputTitle").text("Edit Transaksi"); currentNominalString = data.jumlah.toString();
       $("#inputKeterangan").val(data.deskripsi); $("#inputTanggal").val(data.tanggal); $("#inputDompetSelect").val(data.metode);
-      setJenisInput(data.jenis); 
-      setTimeout(() => {
-         let found = false;
-         $(".cat-item").each(function() { if($(this).find('span').text() === data.kategori) { selectCategory(this, data.kategori); found = true; } });
-         if(!found && data.kategori) selectedCategory = data.kategori;
-         updateDisplayKeypad(); 
-         $('#customInputModal').modal('show');
-      }, 50);
+      
+      await setJenisInput(data.jenis); 
+
+      if(data.jenis === 'Pengeluaran' && data.sumberDana) {
+          $("#inputSumberDana").val(data.sumberDana);
+      }
+
+      let found = false;
+      $(".cat-item").each(function() { if($(this).find('span').text() === data.kategori) { selectCategory(this, data.kategori); found = true; } });
+      if(!found && data.kategori) selectedCategory = data.kategori;
+      updateDisplayKeypad(); 
+      $('#customInputModal').modal('show');
     }
 
-    function setJenisInput(jenis) {
+    async function setJenisInput(jenis) {
       currentInputMode = jenis;
-      if(jenis === 'Pemasukan') { $("#btnTogglePemasukan").addClass('active-in'); $("#btnTogglePengeluaran").removeClass('active-out'); } 
-      else { $("#btnTogglePemasukan").removeClass('active-in'); $("#btnTogglePengeluaran").addClass('active-out'); }
+      if(jenis === 'Pemasukan') { 
+          $("#btnTogglePemasukan").addClass('active-in'); 
+          $("#btnTogglePengeluaran").removeClass('active-out'); 
+          $("#sumberDanaContainer").hide();
+      } 
+      else { 
+          $("#btnTogglePemasukan").removeClass('active-in'); 
+          $("#btnTogglePengeluaran").addClass('active-out'); 
+          $("#sumberDanaContainer").show();
+          await updateSumberDana();
+      }
       renderCategoryIcons();
     }
 
     function renderCategoryIcons() {
       const c = $("#categoryContainer"); c.empty();
-      const kats = referensiData.kategoriPerJenis[currentInputMode] || [];
+      let kats = referensiData.kategoriPerJenis[currentInputMode] || [];
       kats.forEach((cat, i) => {
         const ic = getCategoryIcon(cat);
-        if(i===0) selectedCategory = cat;
-        c.append(`<div class="cat-item ${i===0?'active':''}" onclick="selectCategory(this, '${cat}')"><div class="cat-icon"><i class="bi ${ic}"></i></div><span>${cat}</span></div>`);
+        if(i===0 && !editId) selectedCategory = cat;
+        c.append(`<div class="cat-item ${cat === selectedCategory ? 'active' : ''}" onclick="selectCategory(this, '${cat}')"><div class="cat-icon"><i class="bi ${ic}"></i></div><span>${cat}</span></div>`);
       });
     }
     
@@ -982,22 +1016,27 @@
     async function saveCustomInput() {
       const j = Number(currentNominalString); const t = $("#inputTanggal").val();
       if(j<=0 || !selectedCategory || !t) return Swal.fire({icon:'warning', title:'Lengkapi data!', showConfirmButton:false, timer:1000, ...swalSmallConfig});
-      const data = { tanggal: t, jenis: currentInputMode, kategori: selectedCategory, jumlah: j, metode: $("#inputDompetSelect").val(), deskripsi: $("#inputKeterangan").val() };
+      
+      const data = { 
+          tanggal: t, 
+          jenis: currentInputMode, 
+          kategori: selectedCategory, 
+          jumlah: j, 
+          metode: $("#inputDompetSelect").val(), 
+          deskripsi: $("#inputKeterangan").val(),
+          sumberDana: currentInputMode === 'Pengeluaran' ? $("#inputSumberDana").val() : null
+      };
+      
       if(editId) await db.transaksi.update(editId, data); else await db.transaksi.add(data);
       $("#customInputModal").modal('hide'); Swal.fire({icon: 'success', title: 'Tersimpan', showConfirmButton: false, timer: 1000, ...swalSmallConfig});
       
-      // Update UI real-time
       if($("#view-transaksi").hasClass('active')) loadData(); 
       updateDashboard(); 
     }
 
     $(document).on('keydown', function(e) {
       if ($('#customInputModal').hasClass('show')) {
-        if ($(e.target).is('input, textarea, select')) {
-            if(e.key === 'Enter' && e.target.id === 'inputKeterangan') { saveCustomInput(); }
-            return; 
-        }
-
+        if ($(e.target).is('input, textarea, select')) { if(e.key === 'Enter' && e.target.id === 'inputKeterangan') { saveCustomInput(); } return; }
         const key = e.key;
         if (/[0-9]/.test(key)) { e.preventDefault(); inputNum(key); } 
         else if (key === 'Backspace') { e.preventDefault(); deleteNum(); } 
@@ -1007,55 +1046,26 @@
 
     /* --- FUNGSI HUTANG --- */
     function toggleCicilanFields() { if($("#hTipe").val() === 'Cicilan') $("#fieldsCicilan").slideDown(); else $("#fieldsCicilan").slideUp(); }
-
     async function saveHutang() {
-      const data = {
-        jenis: $("#hTipe").val(), nama: $("#hNama").val(), jumlah: unformatRibuan($("#hJumlah").val()),
-        catatan: $("#hCatatan").val(), jatuh_tempo: $("#hTempo").val(), pengingat: $("#hPengingat").val(), status: 'Belum Lunas'
-      };
+      const data = { jenis: $("#hTipe").val(), nama: $("#hNama").val(), jumlah: unformatRibuan($("#hJumlah").val()), catatan: $("#hCatatan").val(), jatuh_tempo: $("#hTempo").val(), pengingat: $("#hPengingat").val(), status: 'Belum Lunas' };
       if(!data.nama || !data.jumlah || !data.jatuh_tempo) return Swal.fire({icon:'warning', title:'Isi semua data!', showConfirmButton:false, timer:1000, ...swalSmallConfig});
-      if(data.jenis === 'Cicilan') {
-        data.jumlah_cicilan = $("#hTenor").val(); data.nominal_cicilan = unformatRibuan($("#hNominalCicil").val());
-        data.frekuensi = $("#hFrekuensi").val(); data.tgl_mulai = $("#hMulai").val();
-      }
+      if(data.jenis === 'Cicilan') { data.jumlah_cicilan = $("#hTenor").val(); data.nominal_cicilan = unformatRibuan($("#hNominalCicil").val()); data.frekuensi = $("#hFrekuensi").val(); data.tgl_mulai = $("#hMulai").val(); }
       await db.hutang.add(data);
       $("#modalHutang").modal('hide'); document.getElementById("formHutang").reset(); $("#fieldsCicilan").hide();
       Swal.fire({icon: 'success', title: 'Tersimpan', showConfirmButton: false, timer: 1000, ...swalSmallConfig}); loadHutang();
     }
-
     async function loadHutang() {
-      const all = await db.hutang.toArray();
-      const cHutang = $("#listHutangContainer"); cHutang.empty();
-      const cPiutang = $("#listPiutangContainer"); cPiutang.empty();
-
+      const all = await db.hutang.toArray(); const cHutang = $("#listHutangContainer"); cHutang.empty(); const cPiutang = $("#listPiutangContainer"); cPiutang.empty();
       all.forEach(h => {
         const badge = h.status==='Lunas' ? '<span class="status-badge status-lunas">LUNAS</span>' : '<span class="status-badge status-belum">BELUM LUNAS</span>';
         let act = h.status!=='Lunas' ? `<button class="btn btn-sm text-white py-0 px-2 mt-2" style="font-size:0.75rem; background-color: var(--color-primary);" onclick="lunasHutang(${h.id})"><i class="bi bi-check-circle"></i> Tandai Lunas</button>` : '';
         let extra = h.jenis === 'Cicilan' ? `<div class="small text-muted mt-1">Tenor: ${h.jumlah_cicilan}x | Rp ${formatRibuan(h.nominal_cicilan)} / ${h.frekuensi}</div>` : '';
-        
-        const card = `
-          <div class="item-card p-3">
-            <div class="d-flex justify-content-between align-items-start">
-              <div>
-                <h6 class="mb-1 fw-bold">${h.nama} <span class="badge bg-secondary ms-1" style="font-size:0.6rem;">${h.jenis}</span></h6>
-                <div class="fs-5 fw-bold text-dark">Rp ${formatRibuan(h.jumlah)}</div>
-                <div class="small text-danger mt-1"><i class="bi bi-calendar-x"></i> Tempo: ${h.jatuh_tempo}</div>
-                ${extra}
-                ${act}
-              </div>
-              <div class="text-end">
-                ${badge}
-                <br><button class="btn btn-link text-danger p-0 mt-2" onclick="delHutang(${h.id})"><i class="bi bi-trash"></i></button>
-              </div>
-            </div>
-          </div>
-        `;
+        const card = `<div class="item-card p-3"><div class="d-flex justify-content-between align-items-start"><div><h6 class="mb-1 fw-bold">${h.nama} <span class="badge bg-secondary ms-1" style="font-size:0.6rem;">${h.jenis}</span></h6><div class="fs-5 fw-bold text-dark">Rp ${formatRibuan(h.jumlah)}</div><div class="small text-danger mt-1"><i class="bi bi-calendar-x"></i> Tempo: ${h.jatuh_tempo}</div>${extra}${act}</div><div class="text-end">${badge}<br><button class="btn btn-link text-danger p-0 mt-2" onclick="delHutang(${h.id})"><i class="bi bi-trash"></i></button></div></div></div>`;
         if(h.jenis === 'Piutang') cPiutang.append(card); else cHutang.append(card);
       });
       if(cHutang.is(':empty')) cHutang.html("<p class='text-center text-muted small mt-3'>Tidak ada data.</p>");
       if(cPiutang.is(':empty')) cPiutang.html("<p class='text-center text-muted small mt-3'>Tidak ada data.</p>");
     }
-
     async function lunasHutang(id) { await db.hutang.update(id, {status: 'Lunas'}); loadHutang(); }
     async function delHutang(id) { await db.hutang.delete(id); loadHutang(); }
 
@@ -1063,38 +1073,17 @@
     async function saveTarget() {
       const data = { nama: $("#tNama").val(), jumlah: unformatRibuan($("#tJumlah").val()), tanggal_target: $("#tTanggal").val(), terkumpul: 0 };
       if(!data.nama || !data.jumlah || !data.tanggal_target) return Swal.fire({icon:'warning', title:'Isi semua data!', showConfirmButton:false, timer:1000, ...swalSmallConfig});
-      await db.target.add(data);
-      $("#modalTarget").modal('hide'); $("#tNama").val(''); $("#tJumlah").val(''); $("#tTanggal").val('');
+      await db.target.add(data); $("#modalTarget").modal('hide'); $("#tNama").val(''); $("#tJumlah").val(''); $("#tTanggal").val('');
       Swal.fire({icon: 'success', title: 'Tersimpan', showConfirmButton: false, timer: 1000, ...swalSmallConfig}); loadTarget();
     }
-
     async function loadTarget() {
-      const all = await db.target.toArray();
-      const c = $("#listTargetContainer"); c.empty();
+      const all = await db.target.toArray(); const c = $("#listTargetContainer"); c.empty();
       if(all.length===0) { c.html("<p class='text-center text-muted small mt-3'>Belum ada target.</p>"); return; }
-      
       all.forEach(t => {
         let p = (t.terkumpul / t.jumlah) * 100;
-        c.append(`
-          <div class="item-card p-3">
-            <div class="d-flex justify-content-between mb-1">
-              <h6 class="fw-bold mb-0">${t.nama}</h6>
-              <button class="btn btn-link text-danger p-0" onclick="delTarget(${t.id})"><i class="bi bi-x-lg"></i></button>
-            </div>
-            <div class="d-flex justify-content-between small text-muted mb-2">
-              <span>Terkumpul: Rp ${formatRibuan(t.terkumpul)}</span>
-              <span>Target: Rp ${formatRibuan(t.jumlah)}</span>
-            </div>
-            <div class="progress-bar-custom mb-2"><div class="progress-fill" style="width:${Math.min(p,100)}%;"></div></div>
-            <div class="d-flex justify-content-between align-items-center">
-              <span class="small fw-bold text-primary-custom">${Math.round(p)}%</span>
-              <button class="btn btn-sm btn-outline-primary py-0" onclick="addDanaTarget(${t.id}, ${t.terkumpul})"><i class="bi bi-plus"></i> Dana</button>
-            </div>
-          </div>
-        `);
+        c.append(`<div class="item-card p-3"><div class="d-flex justify-content-between mb-1"><h6 class="fw-bold mb-0">${t.nama}</h6><button class="btn btn-link text-danger p-0" onclick="delTarget(${t.id})"><i class="bi bi-x-lg"></i></button></div><div class="d-flex justify-content-between small text-muted mb-2"><span>Terkumpul: Rp ${formatRibuan(t.terkumpul)}</span><span>Target: Rp ${formatRibuan(t.jumlah)}</span></div><div class="progress-bar-custom mb-2"><div class="progress-fill" style="width:${Math.min(p,100)}%;"></div></div><div class="d-flex justify-content-between align-items-center"><span class="small fw-bold text-primary-custom">${Math.round(p)}%</span><button class="btn btn-sm btn-outline-primary py-0" onclick="addDanaTarget(${t.id}, ${t.terkumpul})"><i class="bi bi-plus"></i> Dana</button></div></div>`);
       });
     }
-
     async function addDanaTarget(id, current) {
       const { value: add } = await Swal.fire({ title: 'Tambah Dana', input: 'number', inputPlaceholder: 'Nominal Rp', ...swalSmallConfig, showCancelButton: true, confirmButtonText:'Tambah', cancelButtonText:'Batal' });
       if(add) { await db.target.update(id, {terkumpul: current + Number(add)}); loadTarget(); }
@@ -1112,7 +1101,6 @@
         Swal.fire({icon:'success', title:'Backup diunduh', showConfirmButton:false, timer:1000, ...swalSmallConfig});
       } catch (err) { Swal.fire({icon:'error', title:'Gagal backup', showConfirmButton:false, timer:1000, ...swalSmallConfig}); }
     }
-    
     async function restoreData(event) {
       const file = event.target.files[0]; if (!file) return;
       Swal.fire({ title: 'Restore Data?', text: 'Data akan ditambahkan.', icon: 'warning', showCancelButton: true, confirmButtonText:'Ya', cancelButtonText:'Batal', ...swalSmallConfig }).then((result) => {
@@ -1136,187 +1124,74 @@
 
     $(document).ready(async function () {
       initReferensi(); loadDropdown(); await updateDashboard();
-      
-      // Pemicu filter untuk loadData yang diperbarui
       $('#filterDompetTransaksi').change(function() { currentFilterDompet = $(this).val(); loadData(); });
       $('#filterKategoriTransaksi').change(function() { currentFilterKategori = $(this).val(); loadData(); });
       $('#filterPeriode').change(function() { currentFilterPeriode = $(this).val(); loadData(); });
-
       $('#detailModal').on('shown.bs.modal', loadDetailData);
       $("#tglAwal, #tglAkhir, #filterDompetLaporan").on('change', loadDetailData);
       $("#fileRestore").change(restoreData);
     });
 
-    /* --- RENDER CARD VIEW TRANSAKSI --- */
     async function loadData() {
-      const data = await db.transaksi.toArray(); 
-      const now = new Date();
-      
+      const data = await db.transaksi.toArray(); const now = new Date();
       const filtered = data.filter(r => {
-        // Filter Dompet
         if (currentFilterDompet !== 'all' && r.metode !== currentFilterDompet) return false;
-        // Filter Kategori
         if (currentFilterKategori !== 'all' && r.kategori !== currentFilterKategori) return false;
-        // Filter Jenis
         if (currentFilterJenis !== '' && r.jenis !== currentFilterJenis) return false;
-
-        // Filter Pencarian Cepat
-        if (currentSearchKeyword !== '') {
-          const term = currentSearchKeyword.toLowerCase();
-          const matchKet = r.deskripsi && r.deskripsi.toLowerCase().includes(term);
-          const matchKat = r.kategori.toLowerCase().includes(term);
-          if (!matchKet && !matchKat) return false;
-        }
-
-        // Filter Periode
+        if (currentSearchKeyword !== '') { const term = currentSearchKeyword.toLowerCase(); const matchKet = r.deskripsi && r.deskripsi.toLowerCase().includes(term); const matchKat = r.kategori.toLowerCase().includes(term); if (!matchKet && !matchKat) return false; }
         const rowDate = new Date(r.tanggal);
-        if (currentFilterPeriode === 'mingguan') {
-          const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay());
-          const endOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() + (6 - now.getDay()), 23, 59, 59);
-          if (rowDate < startOfWeek || rowDate > endOfWeek) return false;
-        } else if (currentFilterPeriode === 'bulanan') {
-          if (rowDate.getMonth() !== now.getMonth() || rowDate.getFullYear() !== now.getFullYear()) return false;
-        } else if (currentFilterPeriode === 'bulan_lalu') {
-          const lastMonth = new Date(now);
-          lastMonth.setMonth(now.getMonth() - 1);
-          if (rowDate.getMonth() !== lastMonth.getMonth() || rowDate.getFullYear() !== lastMonth.getFullYear()) return false;
-        } else if (currentFilterPeriode === 'tahunan') {
-          if (rowDate.getFullYear() !== now.getFullYear()) return false;
-        }
-        
+        if (currentFilterPeriode === 'mingguan') { const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay()); const endOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() + (6 - now.getDay()), 23, 59, 59); if (rowDate < startOfWeek || rowDate > endOfWeek) return false; } 
+        else if (currentFilterPeriode === 'bulanan') { if (rowDate.getMonth() !== now.getMonth() || rowDate.getFullYear() !== now.getFullYear()) return false; } 
+        else if (currentFilterPeriode === 'bulan_lalu') { const lastMonth = new Date(now); lastMonth.setMonth(now.getMonth() - 1); if (rowDate.getMonth() !== lastMonth.getMonth() || rowDate.getFullYear() !== lastMonth.getFullYear()) return false; } 
+        else if (currentFilterPeriode === 'tahunan') { if (rowDate.getFullYear() !== now.getFullYear()) return false; }
         return true;
       });
-
-      // Hitung Total dari Data yang Difilter
-      let sumIn = 0, sumOut = 0;
-      filtered.forEach(r => {
-          if(r.jenis === 'Pemasukan') sumIn += Number(r.jumlah);
-          else sumOut += Number(r.jumlah);
-      });
-      $("#filterTotalIn").text(`Masuk: Rp ${formatRibuan(sumIn)}`);
-      $("#filterTotalOut").text(`Keluar: Rp ${formatRibuan(sumOut)}`);
-
-      // Urutkan tanggal terbaru di atas, jika tanggal sama urutkan ID
+      let sumIn = 0, sumOut = 0; filtered.forEach(r => { if(r.jenis === 'Pemasukan') sumIn += Number(r.jumlah); else sumOut += Number(r.jumlah); });
+      $("#filterTotalIn").text(`Masuk: Rp ${formatRibuan(sumIn)}`); $("#filterTotalOut").text(`Keluar: Rp ${formatRibuan(sumOut)}`);
       filtered.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal) || b.id - a.id);
-
-      const container = $("#transaksiCardContainer");
-      container.empty();
-
-      if (filtered.length === 0) {
-        container.html(`
-            <div class='text-center text-muted mt-5 mb-5'>
-                <i class='bi bi-folder-x' style='font-size:3rem; opacity:0.5;'></i>
-                <p class='mt-2 small'>Tidak ada data transaksi.</p>
-            </div>
-        `);
-        return;
-      }
-
+      const container = $("#transaksiCardContainer"); container.empty();
+      if (filtered.length === 0) { container.html(`<div class='text-center text-muted mt-5 mb-5'><i class='bi bi-folder-x' style='font-size:3rem; opacity:0.5;'></i><p class='mt-2 small'>Tidak ada data transaksi.</p></div>`); return; }
+      
       filtered.forEach(r => {
-        const isIncome = r.jenis === 'Pemasukan';
-        const colorClass = isIncome ? 'text-income' : 'text-expense';
-        const iconClass = isIncome ? 'tx-icon-in' : 'tx-icon-out';
-        const sign = isIncome ? '+' : '-';
+        const isIncome = r.jenis === 'Pemasukan'; 
+        const colorClass = isIncome ? 'text-income' : 'text-expense'; 
+        const iconClass = isIncome ? 'tx-icon-in' : 'tx-icon-out'; 
+        const sign = isIncome ? '+' : '-'; 
         const iconBi = getCategoryIcon(r.kategori);
+        const tglObj = new Date(r.tanggal); const tglStr = tglObj.toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year:'numeric'});
+        
+        const sumberDanaLabel = (r.jenis === 'Pengeluaran' && r.sumberDana) ? `<span class="badge bg-light text-primary border ms-1 fw-normal" style="font-size:0.6rem">Dari: ${r.sumberDana}</span>` : '';
 
-        const tglObj = new Date(r.tanggal);
-        const tglStr = tglObj.toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year:'numeric'});
-
-        const cardHtml = `
-          <div class="tx-card">
-            <div class="tx-card-left">
-              <div class="tx-icon-wrap ${iconClass}">
-                <i class="bi ${iconBi}"></i>
-              </div>
-              <div class="tx-details">
-                <h6>${r.kategori}</h6>
-                <small><i class="bi bi-calendar-event me-1"></i> ${tglStr} &nbsp;|&nbsp; <i class="bi bi-wallet2 mx-1"></i> ${r.metode}</small>
-                ${r.deskripsi ? `<small class="text-muted mt-1 fst-italic">"${r.deskripsi}"</small>` : ''}
-              </div>
-            </div>
-            <div class="tx-card-right">
-              <div class="tx-amount ${colorClass}">${sign} Rp ${formatRibuan(r.jumlah)}</div>
-              <div class="tx-actions">
-                <button onclick="editData(${r.id})" title="Edit"><i class="bi bi-pencil-square"></i></button>
-                <button onclick="delTransaksi(${r.id})" title="Hapus"><i class="bi bi-trash text-danger"></i></button>
-              </div>
-            </div>
-          </div>
-        `;
+        const cardHtml = `<div class="tx-card"><div class="tx-card-left"><div class="tx-icon-wrap ${iconClass}"><i class="bi ${iconBi}"></i></div><div class="tx-details"><h6>${r.kategori} ${sumberDanaLabel}</h6><small><i class="bi bi-calendar-event me-1"></i> ${tglStr} &nbsp;|&nbsp; <i class="bi bi-wallet2 mx-1"></i> ${r.metode}</small>${r.deskripsi ? `<small class="text-muted mt-1 fst-italic">"${r.deskripsi}"</small>` : ''}</div></div><div class="tx-card-right"><div class="tx-amount ${colorClass}">${sign} Rp ${formatRibuan(r.jumlah)}</div><div class="tx-actions"><button onclick="editData(${r.id})" title="Edit"><i class="bi bi-pencil-square"></i></button><button onclick="delTransaksi(${r.id})" title="Hapus"><i class="bi bi-trash text-danger"></i></button></div></div></div>`;
         container.append(cardHtml);
       });
     }
 
-    function delTransaksi(id) { 
-        Swal.fire({ title: 'Hapus data?', showCancelButton: true, confirmButtonText:'Ya, hapus', cancelButtonText:'Batal', customClass:{popup:'small-swal-popup', title:'small-swal-title', confirmButton:'btn btn-sm btn-danger me-2 px-3', cancelButton:'btn btn-sm btn-secondary px-3'}, buttonsStyling:false }).then(async (res) => { 
-            if (res.isConfirmed) { await db.transaksi.delete(id); loadData(); updateDashboard(); } 
-        }); 
-    }
-
-    function handleQuickSearch(e) { 
-      if(e.key === 'Enter') { 
-        currentSearchKeyword = $("#quickSearch").val(); 
-        currentFilterJenis = ""; 
-        switchView('view-transaksi', $("#navData")); 
-      } 
-    }
-
-    /* --- FUNGSI LAPORAN --- */
+    function delTransaksi(id) { Swal.fire({ title: 'Hapus data?', showCancelButton: true, confirmButtonText:'Ya, hapus', cancelButtonText:'Batal', customClass:{popup:'small-swal-popup', title:'small-swal-title', confirmButton:'btn btn-sm btn-danger me-2 px-3', cancelButton:'btn btn-sm btn-secondary px-3'}, buttonsStyling:false }).then(async (res) => { if (res.isConfirmed) { await db.transaksi.delete(id); loadData(); updateDashboard(); } }); }
+    function handleQuickSearch(e) { if(e.key === 'Enter') { currentSearchKeyword = $("#quickSearch").val(); currentFilterJenis = ""; switchView('view-transaksi', $("#navData")); } }
     async function loadDetailData() {
       const tA = $("#tglAwal").val(), tAk = $("#tglAkhir").val(), df = $("#filterDompetLaporan").val();
       let d1 = tA ? new Date(tA) : null; if(d1) d1.setHours(0,0,0,0);
       let d2 = tAk ? new Date(tAk) : null; if(d2) d2.setHours(23,59,59,999);
-      
       const data = await db.transaksi.toArray();
-      const filtered = data.filter(d => {
-        if(df !== 'all' && d.metode !== df) return false;
-        if(!d1 && !d2) return true; 
-        const t = new Date(d.tanggal); t.setHours(12,0,0,0); 
-        if (d1 && !d2) return t >= d1; if (d1 && d2) return t >= d1 && t <= d2; return t <= d2;
-      });
-      
+      const filtered = data.filter(d => { if(df !== 'all' && d.metode !== df) return false; if(!d1 && !d2) return true; const t = new Date(d.tanggal); t.setHours(12,0,0,0); if (d1 && !d2) return t >= d1; if (d1 && d2) return t >= d1 && t <= d2; return t <= d2; });
       if ($.fn.DataTable.isDataTable('#detailTable')) $('#detailTable').DataTable().clear().destroy();
-      
       detailTable = $('#detailTable').DataTable({ 
-        data: filtered.map(r => {
-          const isIncome = r.jenis === 'Pemasukan'; const colorClass = isIncome ? 'text-success' : 'text-danger';
-          return [ 
-            r.tanggal, 
-            r.kategori, 
-            `<span class="${colorClass} fw-bold">Rp ${formatRibuan(r.jumlah)}</span>`, 
-            r.jenis, 
-            r.metode, 
-            r.deskripsi || '-' 
-          ];
+        data: filtered.map(r => { 
+          const isIncome = r.jenis === 'Pemasukan'; 
+          const colorClass = isIncome ? 'text-success' : 'text-danger'; 
+          const labelKategori = r.kategori + (r.sumberDana ? `<br><small class="text-muted">Dari: ${r.sumberDana}</small>` : '');
+          return [ r.tanggal, labelKategori, `<span class="${colorClass} fw-bold">Rp ${formatRibuan(r.jumlah)}</span>`, r.jenis, r.metode, r.deskripsi || '-' ]; 
         }), 
-        order: [[0, 'desc']], // MENGURUTKAN BERDASARKAN TANGGAL TERBARU DI ATAS
-        responsive: true,
-        columns: [ 
-          {title:'Tgl'}, 
-          {title:'Kategori'}, 
-          {title:'Jumlah'}, 
-          {title:'Jenis', className: 'none'}, 
-          {title:'Dompet', className: 'none'}, 
-          {title:'Ket', className: 'none'} 
-        ], 
-        pageLength: 5, lengthChange: false, searching: false,
+        order: [[0, 'desc']], responsive: true, columns: [ {title:'Tgl'}, {title:'Kategori'}, {title:'Jumlah'}, {title:'Jenis', className: 'none'}, {title:'Dompet', className: 'none'}, {title:'Ket', className: 'none'} ], pageLength: 5, lengthChange: false, searching: false, 
       });
-
       const inTot = filtered.filter(f => f.jenis === 'Pemasukan').reduce((a, b) => a + Number(b.jumlah), 0);
       const outTot = filtered.filter(f => f.jenis !== 'Pemasukan').reduce((a, b) => a + Number(b.jumlah), 0);
       $("#cardPemasukan").text('Rp ' + formatRibuan(inTot)); $("#cardPengeluaran").text('Rp ' + formatRibuan(outTot)); $("#cardSaldo").text('Rp ' + formatRibuan(inTot - outTot));
     }
   </script>
-  
   <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('Service Worker terdaftar!', reg))
-          .catch(err => console.error('Service Worker gagal:', err));
-      });
-    }
+    if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').then(reg => console.log('Service Worker terdaftar!', reg)).catch(err => console.error('Service Worker gagal:', err)); }); }
   </script>
-  
 </body>
 </html>
