@@ -169,8 +169,8 @@
     table.dataTable th { background: var(--color-primary); color: white; border: 1px solid #eaecf4; text-align: center; padding: 10px 8px; font-weight: 600; font-size: 0.75rem;}
     table.dataTable td { border: 1px solid #eaecf4; vertical-align: middle; padding: 10px 8px; font-size: 0.75rem;}
 
-    .text-income { color: #10b981 !important; } /* Hijau untuk teks masuk */
-    .text-expense { color: var(--color-pengeluaran) !important; } /* Merah untuk teks keluar */
+    .text-income { color: #10b981 !important; } 
+    .text-expense { color: var(--color-pengeluaran) !important; } 
     .text-primary-custom { color: var(--color-primary) !important; }
     .text-danger { color: var(--color-pengeluaran) !important; }
 
@@ -201,8 +201,8 @@
           <i class="bi bi-eye" id="toggleSaldo" onclick="toggleSaldoVis()"></i>
         </div>
         <div class="bottom-info">
-          <div>Pemasukan Bulan Ini<br><strong id="homePemasukan" style="font-size:0.8rem">Rp 0</strong></div>
-          <div style="text-align: right;">Pengeluaran Bulan Ini<br><strong id="homePengeluaran" style="font-size:0.8rem">Rp 0</strong></div>
+          <div>Pemasukan <span class="lblBulanDinamic text-white-50"></span><br><strong id="homePemasukan" style="font-size:0.8rem">Rp 0</strong></div>
+          <div style="text-align: right;">Pengeluaran Dompet <span class="lblBulanDinamic text-white-50"></span><br><strong id="homePengeluaran" style="font-size:0.8rem">Rp 0</strong></div>
         </div>
       </div>
 
@@ -229,13 +229,19 @@
         <h5>Anggaran Bulanan <i class="bi bi-gear ms-2" style="color:#aaa; cursor:pointer;" onclick="setAnggaran()" title="Atur Batas Anggaran"></i></h5>
       </div>
       <div class="budget-card">
-        <p class="subtitle mb-1">Pengeluaran Bulan Ini (<span id="lblBulanIni"></span>)</p>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <select id="filterDompetBeranda" class="form-select form-select-sm border-0 text-primary-custom fw-bold shadow-sm" style="width: auto; font-size: 0.7rem; border-radius: 8px; background: #eaecf4; padding: 2px 24px 2px 8px;" onchange="updateDashboard()">
+            <option value="all">Semua Dompet</option>
+          </select>
+          <input type="month" id="filterBulanBeranda" class="form-control form-control-sm border-0 text-primary-custom fw-bold shadow-sm" style="width: auto; font-size: 0.7rem; border-radius: 8px; background: #eaecf4; padding: 2px 6px;" onchange="updateDashboard()">
+        </div>
+        <p class="subtitle mb-1">Total Pengeluaran Bulan Ini</p>
         <div class="amount" id="homePengeluaranBudget">Rp 0</div>
         <p class="subtitle d-flex justify-content-between mb-0 mt-1">
           <span id="lblBatasBudget">Batas: Belum diatur</span>
           <span id="budgetRatioText" style="display:none;">0% terpakai</span>
         </p>
-        <div class="progress-bar-custom">
+        <div class="progress-bar-custom mb-1">
           <div class="progress-fill" id="budgetProgressBar"></div>
         </div>
       </div>
@@ -565,7 +571,7 @@
     });
 
     let referensiData = {};
-    let detailTable; // Data table tetap dipakai khusus untuk modal laporan
+    let detailTable; 
     let isSaldoHidden = false;
 
     // Filter Globals
@@ -623,8 +629,13 @@
       
       const opsiSemua = `<option value="all">Semua Dompet</option>`;
       const opsiDompet = referensiData.metode.map(m => `<option value="${m}">${m}</option>`).join('');
+      
+      // Load to transaction and report dropdowns
       $("#filterDompetTransaksi").html(opsiSemua + opsiDompet);
       $("#filterDompetLaporan").html(`<option value="all">Semua</option>` + opsiDompet);
+      
+      // Load to new budget card dropdown
+      $("#filterDompetBeranda").html(opsiSemua + opsiDompet);
 
       let allKategori = [];
       Object.values(referensiData.kategoriPerJenis).forEach(arr => { allKategori = allKategori.concat(arr); });
@@ -795,9 +806,21 @@
     async function updateDashboard() {
       const sel = $("#homeDompetSelect").val(); if(!sel) return;
       $("#lblDompetAktif").text(`(${sel})`);
-      const now = new Date(); const m = now.getMonth(); const y = now.getFullYear();
+      
+      // Mengambil bulan dari filter
+      let filterVal = $("#filterBulanBeranda").val();
+      const now = new Date();
+      if (!filterVal) {
+          let nm = (now.getMonth() + 1).toString().padStart(2, '0');
+          filterVal = `${now.getFullYear()}-${nm}`;
+          $("#filterBulanBeranda").val(filterVal);
+      }
+      let y = parseInt(filterVal.split('-')[0]);
+      let m = parseInt(filterVal.split('-')[1]) - 1;
+
+      // Update Teks Dinamis Bulan
       const monthNames = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
-      $("#lblBulanIni").text(`${monthNames[m]} ${y}`);
+      $(".lblBulanDinamic").text(`(${monthNames[m]} ${y})`);
 
       const allData = await db.transaksi.toArray();
       const dompetData = allData.filter(d => d.metode === sel);
@@ -807,20 +830,42 @@
         const amt = Number(r.jumlah); const tgl = new Date(r.tanggal);
         const isM = tgl.getMonth() === m && tgl.getFullYear() === y;
         
-        if(r.jenis === 'Pemasukan') { tIn += amt; if(isM) mIn += amt; } else { tOut += amt; if(isM) mOut += amt; }
+        if(r.jenis === 'Pemasukan') { 
+            tIn += amt; 
+            if(isM) mIn += amt; 
+        } else { 
+            tOut += amt; 
+            if(isM) mOut += amt; 
+        }
+      });
+
+      // MENGHITUNG PENGELUARAN UNTUK ANGGARAN BERDASARKAN FILTER DOMPET & BULAN
+      let totalBulanIniOut = 0;
+      let filterDompetBeranda = $("#filterDompetBeranda").val() || 'all';
+
+      allData.forEach(r => {
+        const amt = Number(r.jumlah); const tgl = new Date(r.tanggal);
+        const isM = tgl.getMonth() === m && tgl.getFullYear() === y;
+        if(r.jenis !== 'Pemasukan' && isM) {
+            if (filterDompetBeranda === 'all' || r.metode === filterDompetBeranda) {
+                totalBulanIniOut += amt;
+            }
+        }
       });
 
       if(!isSaldoHidden) $("#homeTotalSaldo").text(`Rp ${formatRibuan(tIn - tOut)}`);
       $("#homePemasukan").text(`Rp ${formatRibuan(mIn)}`); 
-      $("#homePengeluaran, #homePengeluaranBudget").text(`Rp ${formatRibuan(mOut)}`);
+      $("#homePengeluaran").text(`Rp ${formatRibuan(mOut)}`);
+      $("#homePengeluaranBudget").text(`Rp ${formatRibuan(totalBulanIniOut)}`);
 
+      // Fungsi Anggaran Bulanan
       let budget = referensiData.anggaranBulanan || 0;
       let bar = $("#budgetProgressBar");
       
       if(budget > 0) {
           $("#lblBatasBudget").text(`Batas: Rp ${formatRibuan(budget)}`);
           $("#budgetRatioText").show();
-          let p = (mOut / budget) * 100;
+          let p = (totalBulanIniOut / budget) * 100;
           bar.css("width", `${Math.min(p, 100)}%`);
           
           if(p > 100) { 
@@ -889,7 +934,10 @@
       const data = { tanggal: t, jenis: currentInputMode, kategori: selectedCategory, jumlah: j, metode: $("#inputDompetSelect").val(), deskripsi: $("#inputKeterangan").val() };
       if(editId) await db.transaksi.update(editId, data); else await db.transaksi.add(data);
       $("#customInputModal").modal('hide'); Swal.fire({icon: 'success', title: 'Tersimpan', showConfirmButton: false, timer: 1000, ...swalSmallConfig});
-      if($("#view-transaksi").hasClass('active')) loadData(); updateDashboard();
+      
+      // Update UI real-time
+      if($("#view-transaksi").hasClass('active')) loadData(); 
+      updateDashboard(); 
     }
 
     $(document).on('keydown', function(e) {
